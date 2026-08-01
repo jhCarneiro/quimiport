@@ -133,3 +133,11 @@ A modelagem foi construída utilizando os conceitos fundamentais de Domain-Drive
 A definição da Carga Química como Aggregate Root permite centralizar as regras de negócio, garantindo maior consistência do domínio e facilitando futuras evoluções da aplicação.
 
 Os Domain Services concentram responsabilidades específicas, enquanto os Value Objects representam conceitos imutáveis do domínio. Essa organização torna a solução mais coesa, testável e aderente às boas práticas de arquitetura de software.
+
+# Fluxo de Transição de Estados
+
+A entidade **CargaQuimica** possui um ciclo de vida controlado por estados. Cada transição depende da validação das regras de negócio estabelecidas para o domínio.
+
+O diagrama abaixo representa as possíveis transições de estado da carga química.
+
+![Fluxo de Estados](diagrams/Diagrama_status-flow.png)

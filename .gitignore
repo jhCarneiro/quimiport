@@ -19,3 +19,4 @@ build/
 # Arquivos do sistema
 .DS_Store
 Thumbs.db
+/src/generated/prisma

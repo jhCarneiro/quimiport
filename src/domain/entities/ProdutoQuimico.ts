@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid"
 
 export interface ProdutoQuimicoProps{
+    id?: string,
     nome: string,
     numeroONU: string,
     classeRisco: string,
@@ -28,7 +29,7 @@ export class ProdutoQuimico{
             throw new Error("A classeRisco precisa ser preenchida corretamente")
         }
 
-        this.id = uuid();
+        this.id = props.id ?? uuid();
         this.nome = props.nome;
         this.numeroONU = props.numeroONU;
         this.classeRisco = props.classeRisco;
@@ -37,7 +38,7 @@ export class ProdutoQuimico{
 
     }
 
-    private atualizarTimesTamp():void{
+    private atualizarTimestamp():void{
         this.atualizadoEm = new Date()
     }
     
@@ -57,11 +58,11 @@ export class ProdutoQuimico{
         return this.classeRisco
     }
 
-    getCriadoEm(): Date | undefined{
+    getCriadoEm(): Date{
         return this.criadoEm
     }
 
-    getAtualizadoEm(): Date | undefined{
+    getAtualizadoEm(): Date{
         return this.atualizadoEm
     }
 }

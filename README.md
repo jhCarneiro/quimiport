@@ -2,62 +2,136 @@
 
 ## Sobre o Projeto
 
-O QuimiPort é uma proposta de sistema para gerenciamento de cargas químicas em ambiente portuário, desenvolvida como parte do Tech Challenge da Pós-Tech em Full Stack Development.
+O **QuimiPort** é um sistema de gerenciamento de cargas químicas em ambiente portuário, desenvolvido como parte do Tech Challenge da Pós-Tech em Full Stack Development da FIAP.
 
-O objetivo da aplicação é organizar o processo de cadastro, validação, inspeção, liberação e movimentação de cargas químicas, garantindo rastreabilidade, conformidade e segurança operacional.
+A aplicação tem como objetivo organizar o cadastro, a documentação, a inspeção, a liberação e a movimentação de cargas químicas, promovendo rastreabilidade e segurança operacional.
 
----
+## Funcionalidades
 
-## Objetivos
+- Cadastro e consulta de produtos químicos.
+- Cadastro e consulta de cargas químicas.
+- Associação de produtos às cargas.
+- Registro de documentos.
+- Registro de inspeções.
+- Controle dos estados das cargas.
+- Bloqueio e regularização de cargas.
+- Liberação de cargas após inspeção.
+- Movimentação de cargas liberadas.
+- Persistência de dados no PostgreSQL.
+- Documentação interativa da API com Swagger.
 
-- Gerenciar produtos químicos;
-- Registrar cargas químicas;
-- Controlar documentação obrigatória;
-- Validar regras de segurança;
-- Gerenciar inspeções;
-- Controlar o status das cargas.
+## Tecnologias Utilizadas
 
----
+- **TypeScript** — linguagem principal.
+- **Node.js** — ambiente de execução.
+- **Fastify** — framework HTTP.
+- **PostgreSQL** — banco de dados relacional.
+- **Prisma ORM** — acesso e persistência de dados.
+- **Docker Compose** — execução do banco de dados.
+- **Vitest** — testes automatizados.
+- **Swagger** — documentação da API.
 
-## Tecnologias Planejadas
+## Arquitetura
 
-- TypeScript
-- JavaScript ES6+
-- Domain Driven Design
-- Arquitetura em Camadas
-- Jest (testes)
+O projeto utiliza uma arquitetura em camadas, com separação entre regras de negócio, casos de uso, infraestrutura e interface HTTP, incorporando conceitos de Domain-Driven Design (DDD).
 
----
-
-## Estrutura do Projeto
-
+```text
+quimiport/
+├── docs/
+├── prisma/
+│   ├── migrations/
+│   └── schema.prisma
+├── src/
+│   ├── domain/
+│   │   └── entities/
+│   ├── application/
+│   │   ├── repositories/
+│   │   └── use-cases/
+│   ├── infrastructure/
+│   │   ├── database/
+│   │   └── repositories/
+│   ├── interfaces/
+│   │   └── http/
+│   │       ├── controllers/
+│   │       ├── routes/
+│   │       └── server.ts
+│   └── tests/
+├── docker-compose.yml
+├── prisma7.config.ts
+└── README.md
 ```
-docs/
-src/
-tests/
+
+## Pré-requisitos
+
+Para executar o projeto localmente, é necessário ter instalado:
+
+- Node.js compatível com o projeto.
+- npm.
+- Docker Desktop com Docker Compose.
+
+## Instalação
+
+Clone o repositório e entre na pasta do projeto:
+
+```bash
+git clone URL_DO_REPOSITORIO
+cd quimiport
 ```
 
----
+Instale as dependências:
 
-## Documentação
+```bash
+npm install
+```
 
-- 01 - Entendimento do Domínio
-- 02 - Modelagem DDD
-- 03 - Casos de Uso
-- 04 - Arquitetura
-- 05 - Plano de Qualidade
-- 06 - JavaScript e TypeScript
-- 07 - Decisões Arquiteturais
+## Configuração do Banco de Dados
 
----
+Crie um arquivo `.env` na raiz do projeto com a variável:
 
-## Equipe
+```env
+DATABASE_URL="postgresql://quimiport:quimiport_dev@localhost:5432/quimiport?schema=public"
+```
 
-- Jhonatha Gabriell
-- ChatGPT (apoio técnico durante planejamento e documentação)
+Inicie o PostgreSQL com Docker:
 
----
+```bash
+docker compose up -d
+```
 
-## Licença
+Aplique as migrations:
 
-Projeto acadêmico desenvolvido para fins educacionais.
+```bash
+npx prisma migrate deploy --config prisma7.config.ts
+```
+
+Gere o Prisma Client:
+
+```bash
+npx prisma generate --config prisma7.config.ts
+```
+
+## Executando a Aplicação
+
+Inicie a API:
+
+```bash
+npx tsx src/interfaces/http/server.ts
+```
+
+A aplicação estará disponível em:
+
+```text
+http://localhost:3000
+```
+
+A documentação Swagger poderá ser acessada em:
+
+```text
+http://localhost:3000/docs
+```
+
+## Principais Endpoints
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/produtos-quimicos` | C

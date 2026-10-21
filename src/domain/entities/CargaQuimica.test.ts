@@ -4,6 +4,7 @@ import { ItemCarga } from "./ItemCarga";
 import { Inspecao } from "./Inspecao";
 import { Documento } from "./Documento";
 
+
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const item1 = new ItemCarga({ produtoQuimicoID: "H2SO4", quantidade: 100, unidade: "L" });
 const item2 = new ItemCarga({ produtoQuimicoID: "NaOH", quantidade: 50, unidade: "kg" });
@@ -226,7 +227,7 @@ describe("CargaQuimica", () => {
     })
 
     it("uma carga com documento pode ser bloqueada", () => {
-        
+
         carga.pendenteInspecao()
         carga.adicionarDocumento(documento1)
         carga.bloquear()
@@ -293,4 +294,26 @@ describe("CargaQuimica", () => {
     it("O ID deve seguir o formato de um UUID v4", () => {
         expect(uuidRegex.test(carga.getID())).toBe(true);
     });
+
+
+    it("deve restaurar itens sem alterar a data de atualização da carga", () => {
+        const dataOriginal = new Date("2026-10-01T10:00:00.000Z");
+
+        const carga = new CargaQuimica({
+            atualizadoEm: dataOriginal
+        });
+
+        const item = new ItemCarga({
+            produtoQuimicoID: "produto-123",
+            quantidade: 500,
+            unidade: "g"
+        });
+
+        carga.restaurarItens([item]);
+
+        expect(carga.getItens()).toHaveLength(1);
+        expect(carga.getItens()[0].getID()).toBe(item.getID());
+        expect(carga.getAtualizadoEm()).toEqual(dataOriginal);
+    });
+
 });

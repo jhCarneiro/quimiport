@@ -11,3 +11,75 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model ProdutoQuimico {
+  id          String @id @default(uuid())
+  nome        String
+  numeroONU   String
+  classeRisco String
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  itensCarga ItemCarga[]
+
+  @@map("produtos_quimicos")
+}
+
+model CargaQuimica {
+  id     String @id @default(uuid())
+  status String @default("PENDENTE_DOCUMENTACAO")
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  documentos Documento[]
+  itens      ItemCarga[]
+  inspecoes  Inspecao[]
+
+  @@map("cargas_quimicas")
+}
+
+model ItemCarga {
+  id         String @id @default(uuid())
+  quantidade Float
+  unidade    String
+
+  cargaQuimicaId   String
+  produtoQuimicoId String
+
+  cargaQuimica   CargaQuimica   @relation(fields: [cargaQuimicaId], references: [id])
+  produtoQuimico ProdutoQuimico @relation(fields: [produtoQuimicoId], references: [id])
+
+  @@map("itens_carga")
+}
+
+model Inspecao {
+  id            String   @id @default(uuid())
+  cargaId       String
+  responsavelId String
+  resultado     String
+  observacao    String
+  dataInspecao  DateTime
+  criadoEm      DateTime @default(now())
+  atualizadoEm  DateTime @updatedAt
+
+  carga CargaQuimica @relation(fields: [cargaId], references: [id])
+
+  @@map("inspecoes")
+}
+
+model Documento {
+  id           String   @id @default(uuid())
+  tipo         String
+  numero       String
+  dataEmissao  DateTime
+  dataValidade DateTime
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  cargaQuimicaId String
+  cargaQuimica   CargaQuimica @relation(fields: [cargaQuimicaId], references: [id])
+
+  @@map("documentos")
+}

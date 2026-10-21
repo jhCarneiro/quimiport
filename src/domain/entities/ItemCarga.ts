@@ -1,6 +1,8 @@
-import { v4 as uuid } from "uuid"
+
+import { v4 as uuid } from "uuid";
 
 export interface ItemCargaProps {
+    id?: string;
     produtoQuimicoID: string;
     quantidade: number;
     unidade: string;
@@ -10,39 +12,40 @@ export class ItemCarga {
     private id: string;
     private produtoQuimicoID: string;
     private quantidade: number;
-    private unidade: string
+    private unidade: string;
 
     constructor(props: ItemCargaProps) {
         if (props.produtoQuimicoID.trim() === "") {
-            throw new Error("O ProdutoQuimicoID precisa ser informado")
+            throw new Error("O ProdutoQuimicoID precisa ser informado");
         }
 
-        if (props.quantidade <= 0) {
-            throw new Error("A quantidade precisa ser maior que 0")
+        if (!Number.isFinite(props.quantidade) || props.quantidade <= 0) {
+            throw new Error("A quantidade precisa ser maior que 0");
         }
+
         if (props.unidade.trim() === "") {
-            throw new Error("A unidade nao pode estar vazia")
+            throw new Error("A unidade nao pode estar vazia");
         }
 
-        this.id = uuid();
+        this.id = props.id ?? uuid();
         this.produtoQuimicoID = props.produtoQuimicoID;
         this.quantidade = props.quantidade;
         this.unidade = props.unidade;
-
     }
 
     getID(): string {
-        return this.id
+        return this.id;
     }
+
     getProdutoQuimicoID(): string {
-        return this.produtoQuimicoID
+        return this.produtoQuimicoID;
     }
+
     getQuantidade(): number {
         return this.quantidade;
     }
 
     getUnidade(): string {
-        return this.unidade
+        return this.unidade;
     }
-
 }

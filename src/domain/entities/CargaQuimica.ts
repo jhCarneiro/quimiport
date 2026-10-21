@@ -11,10 +11,14 @@ export enum StatusCarga {
     BLOQUEADA = "BLOQUEADA"
 }
 
+
 export interface CargaQuimicaProps {
+    id?: string;
+    status?: StatusCarga;
     criadoEm?: Date;
     atualizadoEm?: Date;
 }
+
 
 export class CargaQuimica {
     private id: string;
@@ -26,11 +30,11 @@ export class CargaQuimica {
     private atualizadoEm: Date;
 
     constructor(props: CargaQuimicaProps = {}) {
-        this.id = uuid();
+        this.id = props.id ?? uuid();
         this.itens = [];
         this.inspecoes = [];
         this.documentos = [];
-        this.status = StatusCarga.PENDENTE_DOCUMENTACAO;
+        this.status = props.status ?? StatusCarga.PENDENTE_DOCUMENTACAO;
         this.criadoEm = props.criadoEm ?? new Date();
         this.atualizadoEm = props.atualizadoEm ?? new Date();
     }
@@ -43,6 +47,12 @@ export class CargaQuimica {
         this.documentos.push(documento);
         this.atualizadoEm = new Date();
     }
+
+
+    restaurarDocumentos(documentos: Documento[]): void {
+        this.documentos = [...documentos];
+    }
+
 
     getDocumentos(): Documento[] {
         return this.documentos;
@@ -57,18 +67,29 @@ export class CargaQuimica {
         this.atualizadoEm = new Date();
     }
 
+
+    restaurarInspecoes(inspecoes: Inspecao[]): void {
+        this.inspecoes = [...inspecoes];
+    }
+
     getInspecoes(): Inspecao[] {
-        return this.inspecoes;
+        return [...this.inspecoes];
     }
 
     // =========================
     // Itens da carga
     // =========================
 
+
     adicionarItem(item: ItemCarga): void {
         this.itens.push(item);
         this.atualizadoEm = new Date();
     }
+
+    restaurarItens(itens: ItemCarga[]): void {
+        this.itens = [...itens];
+    }
+
 
     getItens(): ItemCarga[] {
         return this.itens;
@@ -198,4 +219,5 @@ export class CargaQuimica {
     getAtualizadoEm(): Date {
         return this.atualizadoEm;
     }
+
 }

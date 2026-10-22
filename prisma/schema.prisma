@@ -12,11 +12,15 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model ProdutoQuimico {
-  id          String @id @default(uuid())
-  nome        String
-  numeroONU   String
-  classeRisco String
+  id                   String   @id @default(uuid())
+  nome                 String
+  descricao            String   @default("")
+  numeroONU            String
+  classeRisco          String
+  grupoCompatibilidade String   @default("")
+  status               String   @default("ATIVO")
 
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
@@ -26,9 +30,16 @@ model ProdutoQuimico {
   @@map("produtos_quimicos")
 }
 
+
 model CargaQuimica {
   id     String @id @default(uuid())
-  status String @default("PENDENTE_DOCUMENTACAO")
+  status String @default("REGISTRADA")
+  codigo String @default("")
+  origem String @default("")
+  destino String @default("")
+  responsavelTecnico String @default("")
+  documentacaoObrigatoria String @default("")
+  dataEntrada DateTime @default(now())
 
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
@@ -83,3 +94,5 @@ model Documento {
 
   @@map("documentos")
 }
+
+

@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate --config prisma7.config.ts",
     "db:migrate": "prisma migrate deploy --config prisma7.config.ts",
-    "postinstall": "prisma skills sync || exit 0"
+    "start": "tsx src/interfaces/http/server.ts",
+    "build": "tsc --noEmit"
   },
   "repository": {
     "type": "git",

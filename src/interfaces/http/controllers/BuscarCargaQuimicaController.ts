@@ -1,3 +1,4 @@
+import { apresentarCarga } from "./apresentarCarga";
 
 import { FastifyReply, FastifyRequest } from "fastify";
 import { BuscarCargaQuimica } from "../../../application/use-cases/BuscarCargaQuimica";
@@ -24,10 +25,5 @@ export async function BuscarCargaQuimicaController(
         });
     }
 
-    return reply.status(200).send({
-        id: carga.getID(),
-        status: carga.getStatus(),
-        criadoEm: carga.getCriadoEm(),
-        atualizadoEm: carga.getAtualizadoEm()
-    });
+    return reply.status(200).send(apresentarCarga(carga));
 }

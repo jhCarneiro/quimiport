@@ -27,6 +27,10 @@ export class CadastrarDocumento {
             throw new Error("CARGA_NAO_ENCONTRADA");
         }
 
+        if (["CANCELADA", "FINALIZADA"].includes(carga.getStatus())) {
+            throw new Error("CARGA_ENCERRADA");
+        }
+
         // 2. Criar e validar o documento
         const documento = new Documento({
             tipo: dados.tipo,

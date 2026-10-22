@@ -17,7 +17,7 @@ export class AdicionarItemCarga {
     constructor(
         private readonly cargaRepository: CargaQuimicaRepository,
         private readonly produtoRepository: ProdutoQuimicoRepository
-    ) {}
+    ) { }
 
     async executar(dados: AdicionarItemCargaDTO): Promise<ItemCarga> {
 
@@ -37,8 +37,13 @@ export class AdicionarItemCarga {
             throw new Error("PRODUTO_NAO_ENCONTRADO");
         }
 
+        if (produto.getStatus() === "INATIVO") {
+            throw new Error("PRODUTO_INATIVO");
+        }
+
+
         // 3. Verificar se a carga permite novos itens
-        if (carga.getStatus() !== StatusCarga.PENDENTE_DOCUMENTACAO) {
+        if (![StatusCarga.PENDENTE_DOCUMENTACAO, StatusCarga.REGISTRADA].includes(carga.getStatus())) {
             throw new Error("CARGA_NAO_PERMITE_ITENS");
         }
 

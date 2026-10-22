@@ -1,3 +1,7 @@
+import { AlterarStatusCargaQuimicaController } from "../controllers/AlterarStatusCargaQuimicaController";
+import { StatusCarga } from "../../../domain/entities/CargaQuimica";
+import { AlterarStatusCargaQuimica } from "../../../application/use-cases/AlterarStatusCargaQuimica";
+import { PrismaCargaQuimicaRepository } from "../../../infrastructure/repositories/PrismaCargaQuimicaRepository";
 
 import { FastifyInstance } from "fastify";
 
@@ -24,13 +28,37 @@ export async function cargaQuimicaRoutes(
             schema: {
                 tags: ["Cargas Químicas"],
                 summary: "Cadastrar uma carga química",
-                description: "Cria uma carga com status inicial PENDENTE_DOCUMENTACAO",
+                description: "Registra carga com produto ativo e status REGISTRADA.",
+                body: {
+                    type: "object", additionalProperties: false,
+                    required: ["codigo", "produtoQuimicoID", "quantidade", "unidade", "origem", "destino", "responsavelTecnico", "documentacaoObrigatoria"],
+                    properties: {
+                        codigo: { type: "string", minLength: 1, pattern: "\\S" },
+                        produtoQuimicoID: { type: "string", format: "uuid" },
+                        quantidade: { type: "number", exclusiveMinimum: 0 },
+                        unidade: { type: "string", minLength: 1, pattern: "\\S" },
+                        origem: { type: "string", minLength: 1, pattern: "\\S" },
+                        destino: { type: "string", minLength: 1, pattern: "\\S" },
+                        responsavelTecnico: { type: "string", minLength: 1, pattern: "\\S" },
+                        documentacaoObrigatoria: { type: "string", minLength: 1, pattern: "\\S" },
+                        dataEntrada: { type: "string", format: "date-time" }
+                    },
+                    examples: [{ codigo: "CARGA-001", produtoQuimicoID: "11111111-1111-4111-8111-111111111111", quantidade: 100,
+                        unidade: "L", origem: "Santos", destino: "Campinas", responsavelTecnico: "Eng. Silva",
+                        documentacaoObrigatoria: "FISPQ" }]
+                },
                 response: {
                     201: {
                         type: "object",
                         properties: {
                             id: { type: "string", format: "uuid" },
                             status: { type: "string" },
+                            codigo: { type: "string" }, origem: { type: "string" }, destino: { type: "string" },
+                            responsavelTecnico: { type: "string" }, documentacaoObrigatoria: { type: "string" },
+                            dataEntrada: { type: "string", format: "date-time" },
+                            itens: { type: "array", items: { type: "object", properties: {
+                                produtoQuimicoID: { type: "string" }, quantidade: { type: "number" }, unidade: { type: "string" }
+                            }}},
                             criadoEm: { type: "string", format: "date-time" },
                             atualizadoEm: { type: "string", format: "date-time" }
                         }
@@ -88,6 +116,12 @@ export async function cargaQuimicaRoutes(
                         properties: {
                             id: { type: "string", format: "uuid" },
                             status: { type: "string" },
+                            codigo: { type: "string" }, origem: { type: "string" }, destino: { type: "string" },
+                            responsavelTecnico: { type: "string" }, documentacaoObrigatoria: { type: "string" },
+                            dataEntrada: { type: "string", format: "date-time" },
+                            itens: { type: "array", items: { type: "object", properties: {
+                                produtoQuimicoID: { type: "string" }, quantidade: { type: "number" }, unidade: { type: "string" }
+                            }}},
                             criadoEm: { type: "string", format: "date-time" },
                             atualizadoEm: { type: "string", format: "date-time" }
                         }
@@ -142,8 +176,10 @@ export async function cargaQuimicaRoutes(
                         }
                     }
                 },
+
                 response: {
                     201: {
+                        description: "Item adicionado com sucesso",
                         type: "object",
                         properties: {
                             id: { type: "string" },
@@ -152,13 +188,24 @@ export async function cargaQuimicaRoutes(
                             unidade: { type: "string" }
                         }
                     },
-                    404: {
+                    400: {
+                        description: "Produto inativo, dados inválidos ou carga que não permite novos itens",
                         type: "object",
                         properties: {
                             mensagem: { type: "string" }
-                        }
+                        },
+                        required: ["mensagem"]
+                    },
+                    404: {
+                        description: "Carga ou produto químico não encontrado",
+                        type: "object",
+                        properties: {
+                            mensagem: { type: "string" }
+                        },
+                        required: ["mensagem"]
                     }
                 }
+
             }
         },
         AdicionarItemCargaController
@@ -319,12 +366,16 @@ export async function cargaQuimicaRoutes(
                             }
                         }
                     },
+
                     400: {
+                        description: "Dados inválidos, produto inativo ou carga que não permite novos itens",
                         type: "object",
                         properties: {
                             mensagem: { type: "string" }
-                        }
+                        },
+                        required: ["mensagem"]
                     },
+
                     404: {
                         type: "object",
                         properties: {
@@ -618,5 +669,31 @@ export async function cargaQuimicaRoutes(
         },
         RegularizarCargaQuimicaController
     );
+
+    const parametros = { type: "object", required: ["id"], properties: { id: { type: "string", format: "uuid" } } };
+    const resposta = { type: "object", properties: { id: { type: "string" }, status: { type: "string" }, atualizadoEm: { type: "string", format: "date-time" } } };
+    const erro = { type: "object", properties: { mensagem: { type: "string" } } };
+    app.patch("/cargas-quimicas/:id/transicionar", {
+        schema: { tags: ["Cargas Químicas"], summary: "Transicionar status segundo o fluxo oficial",
+            params: parametros,
+            body: { type: "object", additionalProperties: false, required: ["status"], properties: {
+                status: { type: "string", enum: Object.values(StatusCarga) }
+            }}, response: { 200: resposta, 400: erro, 404: erro } }
+    }, AlterarStatusCargaQuimicaController);
+    for (const [sufixo, destino] of [["cancelar", StatusCarga.CANCELADA], ["finalizar", StatusCarga.FINALIZADA]] as const) {
+        app.patch(`/cargas-quimicas/:id/${sufixo}`, {
+            schema: { tags: ["Cargas Químicas"], summary: `${sufixo} carga`, params: parametros,
+                response: { 200: resposta, 400: erro, 404: erro } }
+        }, async (request, reply) => {
+            try {
+                const carga = await new AlterarStatusCargaQuimica(new PrismaCargaQuimicaRepository()).executar((request.params as {id:string}).id, destino);
+                return reply.send({ id: carga.getID(), status: carga.getStatus(), atualizadoEm: carga.getAtualizadoEm() });
+            } catch (error) {
+                if (error instanceof Error && error.message === "CARGA_NAO_ENCONTRADA") return reply.status(404).send({ mensagem: error.message });
+                if (error instanceof Error && error.message === "TRANSICAO_STATUS_INVALIDA") return reply.status(400).send({ mensagem: error.message });
+                throw error;
+            }
+        });
+    }
 
 }

@@ -68,7 +68,9 @@ export async function AdicionarItemCargaController(
                 });
             }
 
+
             if (
+                error.message === "PRODUTO_INATIVO" ||
                 error.message === "CARGA_NAO_PERMITE_ITENS" ||
                 error.message === "A quantidade precisa ser maior que 0" ||
                 error.message === "O ProdutoQuimicoID precisa ser informado" ||
@@ -78,6 +80,7 @@ export async function AdicionarItemCargaController(
                     mensagem: error.message
                 });
             }
+
         }
 
         throw error;

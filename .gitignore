@@ -20,3 +20,9 @@ build/
 .DS_Store
 Thumbs.db
 /src/generated/prisma
+
+coverage/
+
+.env
+.env.test
+.env.*

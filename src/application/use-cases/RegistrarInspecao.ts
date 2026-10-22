@@ -39,8 +39,12 @@ export class RegistrarInspecao {
             throw new Error("CARGA_NAO_ENCONTRADA");
         }
 
+        if (["CANCELADA", "FINALIZADA"].includes(carga.getStatus())) {
+            throw new Error("CARGA_ENCERRADA");
+        }
+
         // 2. Verificar se a carga está aguardando inspeção
-        if (carga.getStatus() !== StatusCarga.PENDENTE_INSPECAO) {
+        if (![StatusCarga.PENDENTE_INSPECAO, StatusCarga.EM_INSPECAO].includes(carga.getStatus())) {
             throw new Error("CARGA_NAO_PERMITE_INSPECAO");
         }
 

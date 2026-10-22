@@ -12,6 +12,7 @@ export interface ItemCargaDetalhado {
 
 export interface CargaQuimicaRepository {
     salvar(carga: CargaQuimica): Promise<void>;
+    salvarComItem(carga: CargaQuimica, item: ItemCarga): Promise<void>;
     buscar(id: string): Promise<CargaQuimica | null>;
     listar(): Promise<CargaQuimica[]>;
 

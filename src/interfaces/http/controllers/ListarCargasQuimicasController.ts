@@ -1,3 +1,4 @@
+import { apresentarCarga } from "./apresentarCarga";
 
 import { FastifyReply, FastifyRequest } from "fastify";
 
@@ -13,12 +14,5 @@ export async function ListarCargasQuimicasController(
 
     const cargas = await listarCargas.executar();
 
-    return reply.status(200).send(
-        cargas.map((carga) => ({
-            id: carga.getID(),
-            status: carga.getStatus(),
-            criadoEm: carga.getCriadoEm(),
-            atualizadoEm: carga.getAtualizadoEm()
-        }))
-    );
+    return reply.status(200).send(cargas.map(apresentarCarga));
 }

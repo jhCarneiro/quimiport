@@ -21,10 +21,31 @@ export class PrismaCargaQuimicaRepository implements CargaQuimicaRepository {
             data: {
                 id: carga.getID(),
                 status: carga.getStatus(),
+                codigo: carga.getCodigo(),
+                origem: carga.getOrigem(),
+                destino: carga.getDestino(),
+                responsavelTecnico: carga.getResponsavelTecnico(),
+                documentacaoObrigatoria: carga.getDocumentacaoObrigatoria(),
+                dataEntrada: carga.getDataEntrada(),
                 criadoEm: carga.getCriadoEm(),
                 atualizadoEm: carga.getAtualizadoEm()
             }
         });
+    }
+
+    async salvarComItem(carga: CargaQuimica, item: ItemCarga): Promise<void> {
+        await prisma.cargaQuimica.create({ data: {
+            id: carga.getID(), status: carga.getStatus(), codigo: carga.getCodigo(),
+            origem: carga.getOrigem(), destino: carga.getDestino(),
+            responsavelTecnico: carga.getResponsavelTecnico(),
+            documentacaoObrigatoria: carga.getDocumentacaoObrigatoria(),
+            dataEntrada: carga.getDataEntrada(), criadoEm: carga.getCriadoEm(),
+            atualizadoEm: carga.getAtualizadoEm(),
+            itens: { create: {
+                id: item.getID(), produtoQuimicoId: item.getProdutoQuimicoID(),
+                quantidade: item.getQuantidade(), unidade: item.getUnidade()
+            }}
+        }});
     }
 
     async buscar(id: string): Promise<CargaQuimica | null> {
@@ -129,6 +150,12 @@ export class PrismaCargaQuimicaRepository implements CargaQuimicaRepository {
     private converterParaEntidade(registro: {
         id: string;
         status: string;
+        codigo: string;
+        origem: string;
+        destino: string;
+        responsavelTecnico: string;
+        documentacaoObrigatoria: string;
+        dataEntrada: Date;
         criadoEm: Date;
         atualizadoEm: Date;
         itens: {
@@ -174,6 +201,12 @@ export class PrismaCargaQuimicaRepository implements CargaQuimicaRepository {
         const carga = new CargaQuimica({
             id: registro.id,
             status: registro.status as StatusCarga,
+            codigo: registro.codigo,
+            origem: registro.origem,
+            destino: registro.destino,
+            responsavelTecnico: registro.responsavelTecnico,
+            documentacaoObrigatoria: registro.documentacaoObrigatoria,
+            dataEntrada: registro.dataEntrada,
             criadoEm: registro.criadoEm,
             atualizadoEm: registro.atualizadoEm
         });

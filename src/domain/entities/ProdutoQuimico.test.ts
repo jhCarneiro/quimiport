@@ -113,4 +113,82 @@ describe("ProdutoQuimico", () => {
         expect(teste1.getAtualizadoEm()).toBeInstanceOf(Date)
     })
 
-})
+
+
+    function criarProduto() {
+        return new ProdutoQuimico({
+            nome: "Ácido Sulfúrico",
+            descricao: "Produto químico corrosivo",
+            numeroONU: "1830",
+            classeRisco: "8",
+            grupoCompatibilidade: "CORROSIVOS"
+        });
+    }
+
+    it("deve atualizar os dados de um produto químico", () => {
+
+        const produto = criarProduto();
+
+        produto.atualizarDados({
+            nome: "Ácido Sulfúrico Concentrado",
+            descricao: "Produto corrosivo concentrado",
+            numeroONU: "1830",
+            classeRisco: "8",
+            grupoCompatibilidade: "CORROSIVOS"
+        });
+
+        expect(produto.getNome()).toBe("Ácido Sulfúrico Concentrado");
+        expect(produto.getDescricao()).toBe("Produto corrosivo concentrado");
+        expect(produto.getGrupoCompatibilidade()).toBe("CORROSIVOS");
+    });
+
+    it("não deve permitir atualização com nome vazio", () => {
+
+        const produto = criarProduto();
+
+        expect(() => {
+            produto.atualizarDados({
+                nome: "",
+                descricao: "Descrição",
+                numeroONU: "1830",
+                classeRisco: "8",
+                grupoCompatibilidade: "CORROSIVOS"
+            });
+        }).toThrow("O nome precisa ser preenchido corretamente");
+    });
+
+    it("deve inativar um produto químico", () => {
+
+        const produto = criarProduto();
+
+        expect(produto.getStatus()).toBe("ATIVO");
+
+        produto.inativar();
+
+        expect(produto.getStatus()).toBe("INATIVO");
+    });
+
+    it("não deve permitir inativar um produto já inativo", () => {
+
+        const produto = criarProduto();
+
+        produto.inativar();
+
+        expect(() => {
+            produto.inativar();
+        }).toThrow("O produto químico já está inativo");
+    });
+
+    it("não deve permitir criar produto com status inválido", () => {
+
+        expect(() => {
+            new ProdutoQuimico({
+                nome: "Ácido Sulfúrico",
+                numeroONU: "1830",
+                classeRisco: "8",
+                status: "DESCONHECIDO" as any
+            });
+        }).toThrow("Status do produto químico inválido");
+    });
+
+});

@@ -1,5 +1,5 @@
 
-import { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import { PrismaProdutoQuimicoRepository } from "../../../infrastructure/repositories/PrismaProdutoQuimicoRepository";
 import { BuscarProdutoQuimico } from "../../../application/use-cases/BuscarProdutoQuimico";
 
@@ -24,12 +24,17 @@ export async function BuscarProdutoQuimicoController(
         });
     }
 
+
     return reply.code(200).send({
         id: produto.getID(),
         nome: produto.getNome(),
+        descricao: produto.getDescricao(),
         numeroONU: produto.getNumeroONU(),
         classeRisco: produto.getClasseRisco(),
+        grupoCompatibilidade: produto.getGrupoCompatibilidade(),
+        status: produto.getStatus(),
         criadoEm: produto.getCriadoEm(),
         atualizadoEm: produto.getAtualizadoEm()
     });
+
 }
